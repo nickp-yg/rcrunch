@@ -57,12 +57,20 @@ with_test_authentication({
         validExport(df2)
     })
 
-    test_that("write.csv alias", {
+    test_that("write.csv alias (plus cache hit test)", {
         skip_locally("Vagrant host doesn't serve files correctly")
         filename <- tempfile()
-        write.csv(ds, file=filename)
+        logfile <- tempfile()
+        with(temp.option(httpcache.log=logfile), {
+            without_internet({
+                write.csv(ds, file=filename)
+            })
+        })
         df2 <- read.csv(filename)
         validExport(df2)
+        logs <- loadLogfile(logfile)
+        expect_true(all(logs$scope == "CACHE"))
+        expect_true(all(logs$verb == "HIT"))
     })
 
     test_that("Can filter rows in export", {

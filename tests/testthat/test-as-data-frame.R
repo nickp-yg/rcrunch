@@ -1,5 +1,14 @@
 context("Getting values to make local R objects")
 
+## TODO on this branch:
+# x Use cachedPOST and download.file from new httpcache
+# x Make version of cachedPOST that handles 202
+# * Mock cachedPOST to return path to CSV
+# * Create CSVs for our mock dataset
+# * exportDataset method for variables
+# * exportDataset method for CrunchExprs
+# * Update tests for requests made
+
 ca.values <- data.frame(
     subvar2=structure(c(2L, 2L, 1L, NA, 1L, 2L, 1L, 2L, 2L, 2L, NA, 2L, NA, NA,
         1L, 1L, 2L, 2L, 2L, 1L, NA, 1L, NA, NA, 1L),

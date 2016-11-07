@@ -9,7 +9,7 @@
 #' @param ... additional arguments, currently ignored
 #' @return Invisibly, \code{file}.
 #' @export
-#' @importFrom utils download.file
+#' @importFrom httpcache cachedDownload
 exportDataset <- function (dataset, file, format=c("csv", "spss"),
                            categorical=c("name", "id"), ...) {
 
@@ -29,9 +29,9 @@ exportDataset <- function (dataset, file, format=c("csv", "spss"),
     if (length(opts)) {
         body$options <- opts
     }
-    
-    result <- crPOST(export_url, body=toJSON(body))
-    download.file(result, file, quiet=TRUE, method="curl") ## Note outside of auth. Ok because file is in s3 with token
+
+    result <- crCachedPOST(export_url, body=toJSON(body))
+    cachedDownload(result, file, quiet=TRUE, method="curl")
     invisible(file)
 }
 

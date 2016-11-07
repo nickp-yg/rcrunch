@@ -9,7 +9,6 @@
 #' \code{\link{handleAPIresponse}} function.
 #' @keywords internal
 crunchAPI <- function (http.verb, url, config=list(), status.handlers=list(), ...) {
-    url ## force lazy eval of url before inserting in try() below
     if (isTRUE(getOption("crunch.debug"))) {
         ## TODO: work this into httpcache.log
         payload <- list(...)$body
@@ -28,19 +27,40 @@ crunchAPI <- function (http.verb, url, config=list(), status.handlers=list(), ..
 #' PATCH, and POST.
 #' @return Depends on the response status of the HTTP request and any custom
 #' handlers.
-#' @importFrom httpcache GET PUT PATCH POST DELETE
+#' @importFrom httpcache GET PUT PATCH POST DELETE cachedPOST buildCacheKey getCache setCache
 #' @name http-methods
 #' @export
 crGET <- function (...) crunchAPI("GET", ...)
+
 #' @rdname http-methods
 #' @export
 crPUT <- function (...) crunchAPI("PUT", ...)
+
 #' @rdname http-methods
 #' @export
 crPATCH <- function (...) crunchAPI("PATCH", ...)
+
 #' @rdname http-methods
 #' @export
 crPOST <- function (...) crunchAPI("POST", ...)
+
+#' @rdname http-methods
+#' @export
+crCachedPOST <- function (url, ...) {
+    Call <- match.call(expand.dots=TRUE)
+    out <- crunchAPI("cachedPOST", url, ...)
+    ## Check the cache contents. If it's 202 status, make it say 201 so that if
+    ## we read cache again, we don't check Progress and just take the Location
+    cache.url <- buildCacheKey(eval.parent(Call$url),
+        body=eval.parent(Call$body), extras="POST")
+    cached <- getCache(cache.url)
+    if (cached$status_code == 202) {
+        cached$status_code <- 201
+        setCache(cache.url, cached)
+    }
+    return(out)
+}
+
 #' @rdname http-methods
 #' @export
 crDELETE <- function (...) crunchAPI("DELETE", ...)

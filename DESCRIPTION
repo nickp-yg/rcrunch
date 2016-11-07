@@ -20,7 +20,7 @@ Depends:
     R (>= 3.0.0)
 Imports:
     httr (>= 1.0.0),
-    httpcache (>= 0.1.4),
+    httpcache (>= 0.2.0),
     jsonlite (>= 0.9.15),
     methods,
     curl
