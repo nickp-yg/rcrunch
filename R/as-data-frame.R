@@ -49,7 +49,7 @@ NULL
 
 #' @rdname dataset-to-R
 #' @export
-as.data.frame.CrunchDataset <- function (x, row.names = NULL, optional = FALSE,
+as.data.frame.CrunchDataset <- function (x, row.names=NULL, optional=FALSE,
                                         force=FALSE, ...) {
     out <- CrunchDataFrame(x)
     if (force) {
@@ -60,19 +60,10 @@ as.data.frame.CrunchDataset <- function (x, row.names = NULL, optional = FALSE,
 
 #' @rdname dataset-to-R
 #' @export
-as.data.frame.CrunchDataFrame <- function (x, row.names = NULL, optional = FALSE, ...) {
-    x <- x$.crunchDataset
-    exportDataset(x, file='tmp.csv', format='csv')
-    df <- read.csv('tmp.csv', to.data.frame=TRUE)
+as.data.frame.CrunchDataFrame <- function (x, row.names=NULL, optional=FALSE, ...) {
+
+    df <- read.csv(write.csv(x$.crunchDataset, file=tempfile()),
+        row.names=row.names, ...)
+    ## TODO: Make the data.frame align with the metadata
     return(df)
-#     default.stringsAsFactors <- function () FALSE
-#     limit <- min(c(10000, getOption("crunch.data.frame.limit")))
-#     if (nrow(x) * ncol(x) > limit) {
-#         ## TODO: switch to downloading CSV and reading that?
-#         halt("Dataset too large to coerce to data.frame. ",
-#             "Consider subsetting it first")
-#     }
-#     out <- lapply(x, as.vector)
-#     names(out) <- names(x)
-#     return(structure(out, class="data.frame", row.names=c(NA, -nrow(x))))
 }
