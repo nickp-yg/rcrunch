@@ -230,3 +230,40 @@ setMethod("bases", "CrunchCube", function (x, margin=NULL) {
         return(cubeMarginTable(x, margin, measure=".unweighted_counts"))
     }
 })
+
+setMethod("[", "CrunchCube", function (x, i, j, ..., drop=TRUE) {
+    Call <- match.call()
+    if (missing(i)) {
+        Call[["i"]] <- quote(TRUE)
+    }
+    if (missing(j)) {
+        Call[["j"]] <- quote(TRUE)
+    }
+    x@arrays <- lapply(x@arrays, function (a) {
+        do.this <- Call
+        do.this[[2]] <- quote(a)
+        out <- eval(do.this)
+        if (length(out) > 1 && !is.array(out)) {
+            ## Force to be an array, even if dropped to 1D, except if scalar
+            out <- array(out)
+        }
+        return(out)
+    })
+    keepdims <- rep(TRUE, length(x@dims))
+    if (!missing(i)) {
+        x@dims[[1]] <- lapply(x@dims[[1]], "[", i=i)
+        if (drop && length(x@dims[[1]][[1]]) == 1) {
+            keepdims[1] <- FALSE
+        }
+    }
+    if (!missing(j)) {
+        x@dims[[2]] <- lapply(x@dims[[2]], "[", i=j)
+        if (drop && length(x@dims[[2]][[1]]) == 1) {
+            keepdims[2] <- FALSE
+        }
+    }
+    ## TODO: generalize over ...
+    ## TODO: CubeDims should have a [ method
+    x@dims <- CubeDims(x@dims[keepdims])
+    return(x)
+})

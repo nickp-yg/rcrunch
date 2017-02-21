@@ -49,4 +49,25 @@ with_mock_HTTP({
         expect_identical(bases(book1, 0)[[1]][[2]], b)
         expect_identical(bases(book1)[[1]][[2]], sum(b))
     })
+
+    test_that("Cubes can be sliced and drop is default", {
+        expect_identical(dim(admit.dept), c(2L, 6L))
+        expect_is(admit.dept[1,], "CrunchCube")
+        expect_identical(dim(admit.dept[1,]), 6L)
+        expect_identical(dimnames(admit.dept[1,]), all.dims["Dept"])
+        expect_identical(round(admit.dept[1,]),
+            arrayify(c(573, 367, 318, 265, 151, 42), "Dept"))
+    })
+    test_that("Cube slicing with drop=FALSE", {
+        expect_identical(dim(admit.dept[1, , drop=FALSE]), c(1L, 6L))
+        expect_identical(dimnames(admit.dept[1, , drop=FALSE]),
+            c(list(Admit="Admitted"), all.dims["Dept"]))
+        expect_identical(round(admit.dept[1, , drop=FALSE]),
+            array(c(573, 367, 318, 265, 151, 42),
+                dim=c(1L, 6L),
+                dimnames=c(list(Admit="Admitted"), all.dims["Dept"])))
+    })
+    test_that("Cube slicing to a single value is no longer array", {
+        expect_identical(round(admit.dept[2,3]), 587)
+    })
 })
