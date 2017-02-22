@@ -50,7 +50,7 @@ with_mock_HTTP({
         expect_identical(bases(book1)[[1]][[2]], sum(b))
     })
 
-    test_that("Cubes can be sliced and drop is default", {
+    test_that("Cubes can be sliced on 'i' and drop is default", {
         expect_identical(dim(admit.dept), c(2L, 6L))
         expect_is(admit.dept[1,], "CrunchCube")
         expect_identical(dim(admit.dept[1,]), 6L)
@@ -67,6 +67,16 @@ with_mock_HTTP({
                 dim=c(1L, 6L),
                 dimnames=c(list(Admit="Admitted"), all.dims["Dept"])))
     })
+
+    test_that("Cubes can be sliced on 'j'", {
+        jslice <- admit.dept[,3]
+        expect_is(jslice, "CrunchCube")
+        expect_identical(dim(jslice), 2L)
+        expect_identical(dimnames(jslice), all.dims["Admit"])
+        expect_identical(round(jslice),
+            arrayify(c(318, 587), "Admit"))
+    })
+
     test_that("Cube slicing to a single value is no longer array", {
         expect_identical(round(admit.dept[2,3]), 587)
     })

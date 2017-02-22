@@ -233,6 +233,7 @@ setMethod("bases", "CrunchCube", function (x, margin=NULL) {
 
 setMethod("[", "CrunchCube", function (x, i, j, ..., drop=TRUE) {
     Call <- match.call()
+    ## TODO: switch this to use subsetCubeArray
     if (missing(i)) {
         Call[["i"]] <- quote(TRUE)
     }
@@ -251,6 +252,7 @@ setMethod("[", "CrunchCube", function (x, i, j, ..., drop=TRUE) {
     })
     keepdims <- rep(TRUE, length(x@dims))
     if (!missing(i)) {
+        ## TODO: make a CubeDim class that has a [ method
         x@dims[[1]] <- lapply(x@dims[[1]], "[", i=i)
         if (drop && length(x@dims[[1]][[1]]) == 1) {
             keepdims[1] <- FALSE
