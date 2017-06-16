@@ -24,7 +24,7 @@
 #' \code{FALSE}).
 #' @return Invisibly, \code{file}.
 #' @export
-#' @importFrom utils download.file
+#' @importFrom curl curl_download
 exportDataset <- function (dataset, file, format=c("csv", "spss"),
                            categorical=c("name", "id"), na=NULL,
                            varlabel=c("name", "description"), ...) {
@@ -54,7 +54,7 @@ exportDataset <- function (dataset, file, format=c("csv", "spss"),
     }
 
     result <- crPOST(export_url, body=toJSON(body))
-    download.file(result, file, quiet=TRUE) ## Note outside of auth. Ok because file is in s3 with token
+    curl_download(result, file, quiet=TRUE) ## Note outside of auth. Ok because file is in s3 with token
     invisible(file)
 }
 
