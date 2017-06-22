@@ -143,3 +143,19 @@ alt.endsWith <- function (x, suffix) {
 if (!("endsWith" %in% basefuns)) {
     endsWith <- alt.endsWith
 }
+
+# retry
+retry <- function (expr, wait=.1, max.tries=4) {
+    e <- substitute(expr)
+    tries <- 0
+    while (tries < max.tries) {
+        out <- try(eval.parent(e))
+        if (inherits(out, "try-error")) {
+            tries <- tries + 1
+            Sys.sleep(wait)
+        } else {
+            tries <- max.tries
+        }
+    }
+    return(out)
+}

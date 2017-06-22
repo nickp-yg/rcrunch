@@ -108,3 +108,21 @@ test_that("uniquify", {
     expect_identical(uniquify(c("b", "a", "a", "abcd", "a")),
         c("b", "a", "a  (1)", "abcd", "a  (2)"))
 })
+
+test_that("retry", {
+    tst_func <- function(now, plus) {
+        if (now+plus>Sys.time()) {
+            message("waiting")
+            return(structure("failed", class = "try-error"))
+        }
+        return("done")
+    }
+
+    now <- Sys.time()
+    expect_message(out <- retry(tst_func(now, 1), max.tries = 15), "waiting")
+    expect_equal(out, "done")
+    now <- Sys.time()
+    expect_message(out <- retry(tst_func(now, 10), max.tries = 2), "waiting")
+    expect_is(out, "try-error")
+    expect_equal(out[1], "failed")
+})
