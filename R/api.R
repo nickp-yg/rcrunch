@@ -210,6 +210,8 @@ crDownload <- function (url, file, ...) {
     ## Retry is for delay in propagating the file to the CDN
     ## TODO: consider only "retry" if `url` is in CDN (don't want to retry
     ## necessarily on every url/server response)
-    retry(download.file(url, file, quiet=TRUE, ...))
+    method <- getOption("download.file.method",
+        default=ifelse(.Platform$OS.type == "windows", "auto", "curl"))
+    retry(download.file(url, file, method=method, quiet=TRUE, ...))
     return(file)
 }
